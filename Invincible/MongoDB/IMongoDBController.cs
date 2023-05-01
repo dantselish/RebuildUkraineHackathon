@@ -2,6 +2,7 @@
 using Invincible.Api.RequestsBodies.Organizer;
 using Invincible.Api.RequestsBodies.Volunteer;
 using Invincible.Items;
+using MongoDB.Bson;
 using RebuildUkraineHackatonWebAPI.MongoDB;
 using RebuildUkraineHackatonWebAPI.MongoDB.StatusCodes;
 
@@ -17,7 +18,10 @@ public interface IMongoDBController
   Task<OrganizerItem?> getOrganizer(string google_id);
   Task createOrganizer(OrganizerCreationData organizer_creation_data);
   Task createOrganizer();
+  Task createEvent(EventCreationData creation_data);
+  Task<List<EventItem>> getEventsByOrganizer(ObjectId object_id);
   Task<List<EventItem>> getAllEvents();
-  Task<EventItem> getEventItemById( string id );
+  Task<EventItem?> getEventItemById( string id );
   Task<int> registerVolunteer( string id );
+  Task<RegisterVolunteerStatus> registerVolunteer(EventItem event_item, VolunteerItem volunteer_item);
 }

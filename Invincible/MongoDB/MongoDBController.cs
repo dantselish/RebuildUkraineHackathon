@@ -64,6 +64,11 @@ public class MongoDBController : IMongoDBController
 
     return UpdateStatusCode.OK;
   }
+
+  private Task updateVolunteer(VolunteerItem volunteer_item)
+  {
+    return _volunteers_collection.ReplaceOneAsync(x => x._id == volunteer_item._id, volunteer_item);
+  }
   #endregion
 
   #region Organizer
@@ -95,13 +100,19 @@ public class MongoDBController : IMongoDBController
   }
   #endregion
 
+  #region Events
+  public Task createEvent(EventCreationData creation_data)
+  {
+    return _events_collection.InsertOneAsync( new EventItem(creation_data) );
+  }
+
   public async Task<List<EventItem>> getAllEvents()
   {
     IAsyncCursor<EventItem>? events = await _events_collection.FindAsync( _ => true );
     return await events.ToListAsync();
   }
 
-  public async Task<EventItem> getEventItemById( string id )
+  public async Task<EventItem?> getEventItemById( string id )
   {
     if ( !ObjectId.TryParse( id, out ObjectId object_id ) )
       return null;
@@ -113,6 +124,12 @@ public class MongoDBController : IMongoDBController
   {
     IAsyncCursor<EventItem>? event_item = await _events_collection.FindAsync( getIdFilter( id ) );
     return await event_item.FirstOrDefaultAsync();
+  }
+
+  public async Task<List<EventItem>> getEventsByOrganizer(ObjectId object_id)
+  {
+    IAsyncCursor<EventItem>? event_item = await _events_collection.FindAsync( x => x.organizer.Equals(object_id) );
+    return await event_item.ToListAsync();
   }
 
   public async Task<int> registerVolunteer( string id )
@@ -130,5 +147,27 @@ public class MongoDBController : IMongoDBController
    return event_item.cur_volunteer_count;
   }
 
+  public Task updateEvent(EventItem event_item)
+  {
+    return _events_collection.ReplaceOneAsync( x => x._id == event_item._id, event_item );
+  }
+
+  public async Task<RegisterVolunteerStatus> registerVolunteer(EventItem event_item, VolunteerItem volunteer_item)
+  {
+    var result = event_item.registerVolunteer(volunteer_item._id);
+    if (result != RegisterVolunteerStatus.OK)
+      return result;
+
+    await updateEvent(event_item);
+    if (volunteer_item.currentEvents.Contains(event_item._id))
+      return RegisterVolunteerStatus.OK;
+
+    volunteer_item.currentEvents.Add(event_item._id);
+    await updateVolunteer(volunteer_item);
+
+    return RegisterVolunteerStatus.OK;
+  }
+
   private FilterDefinition<EventItem> getIdFilter( ObjectId id ) => Builders<EventItem>.Filter.Eq( nameof( EventItem._id ), id );
+  #endregion
 }

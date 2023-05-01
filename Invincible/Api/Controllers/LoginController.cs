@@ -10,8 +10,8 @@ using RebuildUkraineHackatonWebAPI.MongoDB;
 namespace RebuildUkraineHackatonWebAPI.Api.Controllers;
 
 [ApiController]
-[Route("login")]
-public class LoginController : Controller
+[Route("api/login")]
+public class LoginController : MyController
 {
     public LoginController(IMongoDBController mongo_db_controller) : base(mongo_db_controller)
     {

@@ -9,7 +9,7 @@ namespace RebuildUkraineHackatonWebAPI.Api.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/organizer")]
-public class OrganizerController : Controller
+public class OrganizerController : MyController
 {
     public OrganizerController(IMongoDBController mongo_db_controller)
         : base(mongo_db_controller){}

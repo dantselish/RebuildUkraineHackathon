@@ -4,12 +4,12 @@ using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace RebuildUkraineHackatonWebAPI.Api.Controllers;
 
-public class Controller : ControllerBase
+public class MyController : ControllerBase
 {
     protected readonly IMongoDBController _db_controller;
 
 
-    public Controller(IMongoDBController mongo_db_controller)
+    public MyController(IMongoDBController mongo_db_controller)
     {
         _db_controller = mongo_db_controller;
     }

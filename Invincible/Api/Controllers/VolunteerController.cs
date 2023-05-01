@@ -9,7 +9,7 @@ namespace RebuildUkraineHackatonWebAPI.Api.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/volunteer")]
-public class VolunteerController : Controller
+public class VolunteerController : MyController
 {
     public VolunteerController(IMongoDBController mongo_db_controller)
         : base(mongo_db_controller){}

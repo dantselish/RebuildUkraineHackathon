@@ -18,7 +18,6 @@ public class EventInfo : EventBasicInfo
     : base( event_item )
   {
     Desctiption  = event_item.description;
-    Duties       = event_item.duties;
   }
 
   public static implicit operator EventInfo ( EventItem event_item ) => new EventInfo( event_item );

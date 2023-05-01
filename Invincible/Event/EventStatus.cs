@@ -6,6 +6,7 @@ public enum EventStatus
 
     DRAFT,
     ACTIVE,
+    IN_PROGRESS,
     FINISHED,
     ARCHIVED
 }

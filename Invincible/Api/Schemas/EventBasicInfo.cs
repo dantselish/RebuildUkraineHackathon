@@ -32,5 +32,5 @@ public class EventBasicInfo
     MaxVolunteers = event_item.max_volunteer_count;
   }
 
-  public static implicit operator EventBasicInfo( EventItem event_item ) => new EventBasicInfo( event_item );
+  public static explicit operator EventBasicInfo( EventItem event_item ) => new EventBasicInfo( event_item );
 }
