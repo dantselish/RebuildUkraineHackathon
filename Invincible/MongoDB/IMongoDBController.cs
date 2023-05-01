@@ -11,6 +11,7 @@ namespace Invincible.MongoDB;
 public interface IMongoDBController
 {
   Task<VolunteerItem?> getVolunteer(string google_id);
+  Task<VolunteerItem?> getVolunteer(ObjectId volunteer_id);
   Task createVolunteer(VolunteerCreationData volunteer_creation_data);
   Task createVolunteer();
   Task<UpdateStatusCode> updateVolunteerInfo(string google_id, PutVolunteerRequestBody info);
@@ -22,6 +23,9 @@ public interface IMongoDBController
   Task<List<EventItem>> getEventsByOrganizer(ObjectId object_id);
   Task<List<EventItem>> getAllEvents();
   Task<EventItem?> getEventItemById( string id );
-  Task<int> registerVolunteer( string id );
+  Task<EventItem?> getEventItemById( ObjectId id );
+  Task startEvent(EventItem event_item);
+  Task finishEvent(EventItem event_item);
+  Task confirmRegistration(EventItem event_item, ObjectId volunteer_id);
   Task<RegisterVolunteerStatus> registerVolunteer(EventItem event_item, VolunteerItem volunteer_item);
 }

@@ -24,7 +24,10 @@ public class EventItem
 
   public ObjectId organizer { get; set; }
 
+  public byte[] confirm_secret { get; set; }
+
   public List<ObjectId> registered_volunteers { get; set; } = new List<ObjectId>();
+  public List<ObjectId> confirmed_volunteers  { get; set; } = new List<ObjectId>();
 
   //TODO organizer, exp reward (const in config)
 
@@ -51,6 +54,9 @@ public class EventItem
     if (registered_volunteers.Contains(object_id))
       return RegisterVolunteerStatus.ALREADY_REGISTERED;
 
+    if (event_status != EventStatus.ACTIVE)
+      return RegisterVolunteerStatus.WRONG_EVENT_STATUS;
+
     ++cur_volunteer_count;
     registered_volunteers.Add(object_id);
     return RegisterVolunteerStatus.OK;
@@ -62,5 +68,6 @@ public enum RegisterVolunteerStatus
   OK,
 
   ALREADY_REGISTERED,
-  MAX_VOLUNTEERS_COUNT
+  MAX_VOLUNTEERS_COUNT,
+  WRONG_EVENT_STATUS
 }

@@ -1,5 +1,6 @@
 ﻿using Invincible.Api.RequestsBodies.Organizer;
 using Invincible.Api.RequestsBodies.Volunteer;
+using Invincible.Event;
 using Invincible.Items;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -42,9 +43,15 @@ public class MongoDBController : IMongoDBController
   }
 
   #region Volunteer
-  public async Task<VolunteerItem> getVolunteer(string google_id)
+  public async Task<VolunteerItem?> getVolunteer(string google_id)
   {
     IAsyncCursor<VolunteerItem>? result = await _volunteers_collection.FindAsync( x => x.google_id.Equals( google_id ) );
+    return await result.FirstOrDefaultAsync();
+  }
+
+  public async Task<VolunteerItem?> getVolunteer(ObjectId volunteer_id)
+  {
+    IAsyncCursor<VolunteerItem>? result = await _volunteers_collection.FindAsync( x => x._id.Equals( volunteer_id ) );
     return await result.FirstOrDefaultAsync();
   }
 
@@ -119,8 +126,7 @@ public class MongoDBController : IMongoDBController
 
     return await getEventItemById( object_id );
   }
-
-  public async Task<EventItem> getEventItemById( ObjectId id )
+  public async Task<EventItem?> getEventItemById( ObjectId id )
   {
     IAsyncCursor<EventItem>? event_item = await _events_collection.FindAsync( getIdFilter( id ) );
     return await event_item.FirstOrDefaultAsync();
@@ -166,6 +172,24 @@ public class MongoDBController : IMongoDBController
     await updateVolunteer(volunteer_item);
 
     return RegisterVolunteerStatus.OK;
+  }
+
+  public Task confirmRegistration(EventItem event_item, ObjectId volunteer_id)
+  {
+    event_item.confirmed_volunteers.Add(volunteer_id);
+    return _events_collection.ReplaceOneAsync(x => x._id.Equals(event_item._id), event_item);
+  }
+
+  public Task startEvent(EventItem event_item)
+  {
+    event_item.event_status = EventStatus.IN_PROGRESS;
+    return updateEvent(event_item);
+  }
+
+  public Task finishEvent(EventItem event_item)
+  {
+    event_item.event_status = EventStatus.ARCHIVED;
+    return updateEvent(event_item);
   }
 
   private FilterDefinition<EventItem> getIdFilter( ObjectId id ) => Builders<EventItem>.Filter.Eq( nameof( EventItem._id ), id );
